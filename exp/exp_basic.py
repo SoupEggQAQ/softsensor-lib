@@ -1,13 +1,14 @@
 import os
 import torch
 
+from models import VALSTM
 
 class Exp_Basic(object):
     def __init__(self, args):
         self.args = args
         # 补充
         self.model_dict = {
-            'VA-LSTM': None
+            'VA-LSTM': VALSTM
         }
         self.device = self._acquire_device()
         self.model = self._build_model().to(self.device)
