@@ -8,7 +8,7 @@ class Exp_Basic(object):
         self.args = args
         # 补充
         self.model_dict = {
-            'VA-LSTM': VALSTM
+            'VALSTM': VALSTM,
         }
         self.device = self._acquire_device()
         self.model = self._build_model().to(self.device)

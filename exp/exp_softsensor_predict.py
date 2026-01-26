@@ -13,13 +13,13 @@ import warnings
 import numpy as np
 
 
-warnings.filters('ignore')
+warnings.filterwarnings('ignore')
 
 # 预测
 
-class Exp_Softsensor_Realtime_Output_Value(Exp_Basic):
+class Exp_Softsensor_Realtime_Value(Exp_Basic):
     def __init__(self, args):
-        super(Exp_Softsensor_Realtime_Output_Value, self).__init__(args)
+        super(Exp_Softsensor_Realtime_Value, self).__init__(args)
     
     def _build_model(self):
         model = self.model_dict[self.args.model].Model(self.args).float()

@@ -47,7 +47,8 @@ class Model(nn.Module):
         else:
             h_t, c_t = init_states
         
-        t = 0
+        
+        hidden_seq = []
         for t in range(seq_len):
             # 取出当前时间步的输入
             x_t = x[:, t, :]

@@ -1,4 +1,4 @@
-from data_loader import Dataset_Custom
+from data_provider.data_loader import Dataset_Custom
 from torch.utils.data import DataLoader
 
 data_dict = {
