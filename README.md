@@ -1,7 +1,7 @@
 # Softsensor Library(softsensor-lib)
 ---
 ## 项目简介
-softsensor-lib是一个面向深度学习研究者的开源库，特别适用于软测量研究分析
+softsensor-lib是一个面向深度学习研究者的开源库，特别适用于软测量研究
 
 版本 softsensor-lib v0
 
