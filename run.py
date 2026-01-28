@@ -19,17 +19,17 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
 
     # basic config
-    parser.add_argument('--task_name', type=str, required=True, default='realtime_prediction',
-                        help='task name, options:[realtime_prediction, short_term_forecast, imputation, generate_virtual_samples]')
-    parser.add_argument('--is_training', type=int, required=True, default=1, help='status')
-    parser.add_argument('--model_id', type=str, required=True, default='test', help='model id')
-    parser.add_argument('--model', type=str, required=True, default='VA-LSTM', 
-                        help='model name, options: [VALSTM, LSTM, RNN, GRU]')
+    parser.add_argument('--task_name', type=str, required=False, default='realtime_prediction',
+                        help='task name, options:[realtime_prediction, short_term_forecast, imputation, generate_virtual_samples, drift_concept]')
+    parser.add_argument('--is_training', type=int, required=False, default=1, help='status')
+    parser.add_argument('--model_id', type=str, required=False, default='test', help='model id')
+    parser.add_argument('--model', type=str, required=False, default='MGRU', 
+                        help='model name, options: [VALSTM, AttentionLSTM, MGRU]')
     
     # data loader
-    parser.add_argument('--data', type=str, required=True, default='SRU', help='dataset type')
-    parser.add_argument('--root_path', type=str, default='./dataset/', help='root path of the data file')
-    parser.add_argument('--data_path', type=str, default='SRU.csv', help='data file')
+    parser.add_argument('--data', type=str, required=False, default='SRU', help='dataset type')
+    parser.add_argument('--root_path', type=str, default='./softsensor-lib/dataset/', help='root path of the data file')
+    parser.add_argument('--data_path', type=str, default='SRU_data.txt', help='data file')
     parser.add_argument('--features', type=str, default='M') # useless
     parser.add_argument('--target', type=str, default='y', help='prediction target')
     parser.add_argument('--input_dim', type=int, default=6, help='channel size')
@@ -46,6 +46,12 @@ if __name__ == '__main__':
     ## VA-LSTM
     parser.add_argument('--hidden_dim', type=int, default=60, help='hidden_dim for VALSTM')
 
+    ## AttentionLSTM
+    parser.add_argument('--attention_type', type=str, default='scaled_dot', help='[scaled_dot, additive]')
+    parser.add_argument('--bidirectional', type=int, default=0, help='Unidirectional 0, Bidirectional 1')
+    parser.add_argument('--dir_mult', type=int, default=1, help='Unidirectional 1, Bidirectional 2')
+    
+    
     # optimization
     parser.add_argument('--num_workers', type=int, default=1, help='data loader num workers')
     parser.add_argument('--itr', type=int, default=1, help='exp times')

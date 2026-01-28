@@ -1,7 +1,7 @@
 import os
 import torch
 
-from models import VALSTM
+from models import VALSTM, MGRU, AttentionLSTM
 
 class Exp_Basic(object):
     def __init__(self, args):
@@ -9,6 +9,8 @@ class Exp_Basic(object):
         # 补充
         self.model_dict = {
             'VALSTM': VALSTM,
+            'MGRU': MGRU,
+            'AttentionLSTM': AttentionLSTM
         }
         self.device = self._acquire_device()
         self.model = self._build_model().to(self.device)

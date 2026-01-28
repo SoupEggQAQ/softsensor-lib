@@ -231,8 +231,7 @@ class Exp_Softsensor_Realtime_Value(Exp_Basic):
         elif preds.ndim == 2:
             # 如果是2D，保持原样或添加维度
             if preds.shape[-1] == 1:
-                preds = preds.reshape(-1, 1, 1)
-                trues = trues.reshape(-1, 1, 1)
+                pass
             else:
                 preds = preds.reshape(-1, 1, preds.shape[-1])
                 trues = trues.reshape(-1, 1, trues.shape[-1])
