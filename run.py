@@ -6,6 +6,7 @@ from torch._dynamo.mutation_guard import install_generation_tagging_init
 import torch.backends
 from torch.cpu import is_available
 from exp.exp_softsensor_predict import Exp_Softsensor_Realtime_Value
+from exp.exp_short_term_forecast import Exp_Short_Term_Forecast
 from utils.print_args import print_args
 import random
 import numpy as np
@@ -95,6 +96,8 @@ if __name__ == '__main__':
 
     if args.task_name in ['realtime_prediction', 'short_term_forecast']:
         Exp = Exp_Softsensor_Realtime_Value
+    elif args.task_name in ['short_term_forecast']:
+        Exp = Exp_Short_Term_Forecast
     else:
         pass # waiting...
 

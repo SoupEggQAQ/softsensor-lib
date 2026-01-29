@@ -1,32 +1,33 @@
-from data_provider.data_factory import data_provider
+import data_provider
+from data_provider.data_factory import data_factory
 from exp.exp_basic import Exp_Basic
-# from utils.tools import adjust_learning_rate, visual
-from utils.tools import EarlyStopping
 from utils.metrics import metric
-# from utils.losses import mape_loss, mase_loss, smape_loss
+from utils.tools import EarlyStopping
+
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch import optim
 import os
 import time
 import warnings
 import numpy as np
-
+import pandas as pd
 
 warnings.filterwarnings('ignore')
 
-# realtime_prediction
+# short_term_forecast
 
-class Exp_Softsensor_Realtime_Value(Exp_Basic):
+class Exp_Short_Term_Forecast(Exp_Basic):
     def __init__(self, args):
-        super(Exp_Softsensor_Realtime_Value, self).__init__(args)
+        super(Exp_Short_Term_Forecast, self).__init__()
     
     def _build_model(self):
-        model = self.model_dict[self.args.model].Model(self.args).float()
+        model = self.model_dict[self.args.model].Modle(self.args).float()
         if self.args.use_multi_gpu and self.args.use_gpu:
             model = nn.DataParallel(model, device_ids=self.args.device_ids)
         return model
-
+    
     def _get_data(self, flag):
         data_set, data_loader = data_provider(self.args, flag)
         return data_set, data_loader
@@ -38,7 +39,7 @@ class Exp_Softsensor_Realtime_Value(Exp_Basic):
     def _select_criterion(self):
         criterion = nn.MSELoss()
         return criterion
-
+    
     def vali(self, vali_data, vali_loader, criterion):
         total_loss = []
         self.model.eval()
@@ -125,7 +126,6 @@ class Exp_Softsensor_Realtime_Value(Exp_Basic):
                 elif hasattr(self.args, 'pred_len') and self.args.pred_len > 1:
                     batch_y = batch_y[:, -self.args.pred_len:]
 
-                # 训练时不能使用detach()，需要保留梯度用于反向传播
                 loss = criterion(outputs, batch_y)
                 train_loss.append(loss.item())
 
@@ -224,19 +224,15 @@ class Exp_Softsensor_Realtime_Value(Exp_Basic):
         trues = np.concatenate(trues, axis=0)
         print('test shape before reshape:', preds.shape, trues.shape)
         
-        # 确保维度正确，处理不同形状的数据
+        # 
         if preds.ndim == 1:
             preds = preds.reshape(-1, 1)
             trues = trues.reshape(-1, 1)
         elif preds.ndim == 2:
-            # 如果是2D，保持原样或添加维度
-            if preds.shape[-1] == 1:
-                pass
-            else:
-                preds = preds.reshape(-1, 1, preds.shape[-1])
-                trues = trues.reshape(-1, 1, trues.shape[-1])
+            
+            pass
         elif preds.ndim >= 3:
-            # 如果是3D或更高，reshape为统一格式
+            
             preds = preds.reshape(-1, preds.shape[-2], preds.shape[-1])
             trues = trues.reshape(-1, trues.shape[-2], trues.shape[-1])
         
@@ -247,9 +243,9 @@ class Exp_Softsensor_Realtime_Value(Exp_Basic):
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
-        # DTW 暂无
+        #
 
-        # 计算评估指标 mape, mspe = metric(preds, trues) 暂无
+        # 
         preds_flat = preds.flatten()
         trues_flat = trues.flatten()
 
@@ -261,7 +257,7 @@ class Exp_Softsensor_Realtime_Value(Exp_Basic):
             mae, mse, rmse = metric(preds_flat, trues_flat, self.args.pred_len)
             print('mse:{:.6f}, mae:{:.6f}, rmse:{:.6f}'.format(mse, mae, rmse))
         
-        # 保存结果到文件
+        # 
         result_file = "result_softsensor_forecast.txt"
         f = open(result_file, 'a')
         f.write(setting + "  \n")
@@ -273,7 +269,7 @@ class Exp_Softsensor_Realtime_Value(Exp_Basic):
         f.write('\n')
         f.close()
 
-        # 保存结果
+        # 
         np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse]))
         np.save(folder_path + 'pred.npy', preds)
         np.save(folder_path + 'true.npy', trues)
