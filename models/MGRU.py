@@ -11,6 +11,7 @@ class Model(nn.Module):
         self.input_dim = configs.input_dim
         self.hidden_dim = configs.hidden_dim
         self.pred_len = configs.pred_len
+        self.num_targets = getattr(configs, 'num_targets', 1)
 
         self.encoder_gru_l1 = nn.GRU(self.input_dim, 
                                      self.hidden_dim,
@@ -21,7 +22,7 @@ class Model(nn.Module):
         self.prediction_layer = nn.Sequential(
             nn.Linear(self.hidden_dim, self.hidden_dim),
             nn.ReLU(),
-            nn.Linear(self.hidden_dim, self.pred_len)
+            nn.Linear(self.hidden_dim, self.pred_len * self.num_targets)
         )
     
     def forward(self, x):
@@ -37,6 +38,10 @@ class Model(nn.Module):
 
         y_pred = self.prediction_layer(x)
 
+        if self.num_targets > 1:
+            y_pred = y_pred.reshape(-1, self.pred_len, self.num_targets)
+        else:
+            y_pred = y_pred.reshape(-1, self.pred_len)
         return y_pred
     
     def predict(self, x):

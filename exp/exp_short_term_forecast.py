@@ -1,5 +1,5 @@
 import data_provider
-from data_provider.data_factory import data_factory
+from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
 from utils.metrics import metric
 from utils.tools import EarlyStopping
@@ -20,10 +20,10 @@ warnings.filterwarnings('ignore')
 
 class Exp_Short_Term_Forecast(Exp_Basic):
     def __init__(self, args):
-        super(Exp_Short_Term_Forecast, self).__init__()
+        super(Exp_Short_Term_Forecast, self).__init__(args)
     
     def _build_model(self):
-        model = self.model_dict[self.args.model].Modle(self.args).float()
+        model = self.model_dict[self.args.model].Model(self.args).float()
         if self.args.use_multi_gpu and self.args.use_gpu:
             model = nn.DataParallel(model, device_ids=self.args.device_ids)
         return model
@@ -64,6 +64,9 @@ class Exp_Short_Term_Forecast(Exp_Basic):
                     batch_y = batch_y.unsqueeze(-1) if outputs.dim() > 1 else batch_y
                 elif hasattr(self.args, 'pred_len') and self.args.pred_len > 1:
                     batch_y = batch_y[:, -self.args.pred_len:]
+                    # 单目标多步预测时，标签通常形状为 [batch, pred_len, 1]，压缩最后一维以匹配输出
+                    if batch_y.dim() == 3 and batch_y.shape[-1] == 1 and outputs.dim() == 2:
+                        batch_y = batch_y.squeeze(-1)
 
                 pred = outputs.detach()
                 true = batch_y.detach()
@@ -125,6 +128,9 @@ class Exp_Short_Term_Forecast(Exp_Basic):
                     batch_y = batch_y.unsqueeze(-1) if outputs.dim() > 1 else batch_y
                 elif hasattr(self.args, 'pred_len') and self.args.pred_len > 1:
                     batch_y = batch_y[:, -self.args.pred_len:]
+                    # 单目标多步预测：将 [batch, pred_len, 1] 压缩为 [batch, pred_len] 与输出对齐
+                    if batch_y.dim() == 3 and batch_y.shape[-1] == 1 and outputs.dim() == 2:
+                        batch_y = batch_y.squeeze(-1)
 
                 loss = criterion(outputs, batch_y)
                 train_loss.append(loss.item())

@@ -4,9 +4,9 @@ from sympy.polys.polytools import options
 import torch
 from torch._dynamo.mutation_guard import install_generation_tagging_init
 import torch.backends
-from torch.cpu import is_available
 from exp.exp_softsensor_predict import Exp_Softsensor_Realtime_Value
 from exp.exp_short_term_forecast import Exp_Short_Term_Forecast
+from exp.exp_multi_objective_predict import Exp_Softsensor_Multi_Objective
 from utils.print_args import print_args
 import random
 import numpy as np
@@ -20,8 +20,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
 
     # basic config
-    parser.add_argument('--task_name', type=str, required=False, default='realtime_prediction',
-                        help='task name, options:[realtime_prediction, short_term_forecast, imputation, generate_virtual_samples, drift_concept]')
+    parser.add_argument('--task_name', type=str, required=False, default='multi_objective_prediction',
+                        help='task name, options:[realtime_prediction, short_term_forecast, multi_objective_prediction, drift_concept_de]')
     parser.add_argument('--is_training', type=int, required=False, default=1, help='status')
     parser.add_argument('--model_id', type=str, required=False, default='test', help='model id')
     parser.add_argument('--model', type=str, required=False, default='MGRU', 
@@ -29,18 +29,28 @@ if __name__ == '__main__':
     
     # data loader
     parser.add_argument('--data', type=str, required=False, default='SRU', help='dataset type')
-    parser.add_argument('--root_path', type=str, default='./softsensor-lib/dataset/', help='root path of the data file')
+    parser.add_argument('--root_path', type=str, default='./dataset/', help='root path of the data file')
     parser.add_argument('--data_path', type=str, default='SRU_data.txt', help='data file')
     parser.add_argument('--features', type=str, default='M') # useless
     parser.add_argument('--target', type=str, default='y', help='prediction target')
-    parser.add_argument('--input_dim', type=int, default=6, help='channel size')
+    parser.add_argument('--input_dim', type=int, default=5, help='channel size')
     parser.add_argument('--checkpoints', type=str, default='./checkpoints/', help='location of model checkpoints')
 
+    # task
+    # :  num_targets
+    parser.add_argument('--num_targets', type=int, default=2, help='num_targets')
+    # :  targets
+    parser.add_argument('--target_columns', type=int, nargs='+', default=[-2, -1], help='target_columns')
+    # :  features
+    parser.add_argument('--feature_columns', type=int, nargs='+', default=[0, 1, 2, 3, 4], help='feature_columns')
+
+    
     # task of realtime_prediction 
     parser.add_argument('--seq_len', type=int, default=4, help='input sequence length')
     parser.add_argument('--label_len', type=int, default=2, help='...') # useless
+    
+    # task of short_term_forecast
     parser.add_argument('--pred_len', type=int, default=1, help='prediction sequence length')
-
 
     # model define
 
@@ -56,7 +66,7 @@ if __name__ == '__main__':
     # optimization
     parser.add_argument('--num_workers', type=int, default=1, help='data loader num workers')
     parser.add_argument('--itr', type=int, default=1, help='exp times')
-    parser.add_argument('--train_epochs', type=int, default=200, help='train epochs')
+    parser.add_argument('--train_epochs', type=int, default=1, help='train epochs')
     parser.add_argument('--batch_size', type=int, default=32, help='batch size of train input data')
     parser.add_argument('--patience', type=int, default=3, help='early stopping patience')
     parser.add_argument('--learning_rate', type=float, default=0.0001, help='optimizer learning rate')
@@ -94,10 +104,12 @@ if __name__ == '__main__':
     print('Args in experiment:')
     print_args(args)
 
-    if args.task_name in ['realtime_prediction', 'short_term_forecast']:
+    if args.task_name in ['realtime_prediction']:
         Exp = Exp_Softsensor_Realtime_Value
     elif args.task_name in ['short_term_forecast']:
         Exp = Exp_Short_Term_Forecast
+    elif args.task_name in ['multi_objective_prediction']:
+        Exp = Exp_Softsensor_Multi_Objective
     else:
         pass # waiting...
 

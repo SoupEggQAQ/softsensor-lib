@@ -10,6 +10,7 @@ class Model(nn.Module):
         self.hidden_dim = configs.hidden_dim
         self.pred_len = configs.pred_len
         self.seq_len = configs.seq_len
+        self.num_targets = getattr(configs, 'num_targets', 1)
 
         # 使用PyTorch的LSTMCell替代手动实现的LSTM
         self.lstm_cell = nn.LSTMCell(self.input_dim, self.hidden_dim)
@@ -22,7 +23,7 @@ class Model(nn.Module):
         self.Softmax = nn.Softmax(dim=1)
 
         # 全连接层做预测
-        self.fc = nn.Linear(self.hidden_dim, self.pred_len, bias=True)
+        self.fc = nn.Linear(self.hidden_dim, self.pred_len * self.num_targets, bias=True)
 
         self.init_weights()
     
@@ -70,6 +71,11 @@ class Model(nn.Module):
         # 全连接层做预测
         y_pred = self.fc(final_feature)  # [batch_size, pred_len]
         
+        if self.num_targets > 1:
+            y_pred = y_pred.reshape(-1, self.pred_len, self.num_targets)
+        else:
+            y_pred = y_pred.reshape(-1, self.pred_len)
+
         # 返回预测结果、隐藏序列、最终状态和最后一个时间步的注意力权重
         return y_pred
     

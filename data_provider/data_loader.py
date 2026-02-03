@@ -31,6 +31,23 @@ class Dataset_Custom(Dataset):
         
         self.root_path = root_path
         self.data_path = data_path
+
+        self.feature_columns = getattr(args, 'feature_columns', None)
+        if self.feature_columns is not None:
+            if isinstance(self.feature_columns, (int, str)):
+                self.feature_columns = [int(self.feature_columns)]
+            else:
+                self.feature_columns = [int(col) for col in self.feature_columns]
+   
+        self.target_columns = getattr(args, 'target_columns', None)
+        if self.target_columns is None:
+            self.target_columns = [-1]
+        elif isinstance(self.target_columns, (int, str)):
+            self.target_columns = [int(self.target_columns)]
+        else:
+            self.target_columns = [int(col) for col in self.target_columns]
+        
+             
         self.__read_data__()
     
     def __read_data__(self):
@@ -62,10 +79,28 @@ class Dataset_Custom(Dataset):
             data = self.scaler.transform(df_data.values)
         else:
             data = df_data.values
-
-        self.data_x = data[border1:border2, :-1]
-        self.data_y = data[border1:border2, -1]
         
+        # features and targets
+        num_cols = data.shape[1]
+        target_indices = [col if col >= 0 else num_cols + col for col in self.target_columns]
+        
+        # features
+        if self.feature_columns is not None:
+            feature_indices = [col if col >= 0 else num_cols + col for col in self.feature_columns]
+            self.data_x = data[border1:border2, feature_indices]
+        else:
+            all_indices = list(range(num_cols))
+            feature_indices = [idx for idx in all_indices if idx not in target_indices]
+            self.data_x = data[border1:border2, feature_indices]
+ 
+        # targets
+        if len(target_indices) == 1:
+            self.data_y = data[border1:border2, target_indices[0]]
+            if self.data_y.ndim == 1:
+                self.data_y = self.data_y.reshape(-1, 1)
+        else:
+            self.data_y = data[border1:border2, target_indices]
+               
     def __getitem__(self, index):
         s_begin = index
         s_end = s_begin + self.seq_len
@@ -73,9 +108,11 @@ class Dataset_Custom(Dataset):
         r_begin = s_end - 1
         r_end = r_begin + self.pred_len
         
-
-        seq_x = self.data_x[s_begin:s_end]
-        seq_y = self.data_y[r_begin:r_end]
+        seq_x = self.data_x[s_begin:s_end]  # [seq_len, input_dim]
+        seq_y = self.data_y[r_begin:r_end]   # [pred_len, num_targets] 或 [pred_len]
+        
+        if seq_y.ndim == 1:
+            seq_y = seq_y.reshape(-1, 1)
 
         return seq_x, seq_y
     

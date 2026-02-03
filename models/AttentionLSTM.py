@@ -12,6 +12,7 @@ class Model(nn.Module):
         self.seq_len = configs.seq_len
         self.pred_len = configs.pred_len
         self.input_dim = configs.input_dim
+        self.num_targets = getattr(configs, 'num_targets', 1)
 
         self.bidirectional = configs.bidirectional
         self.dir_mult = configs.dir_mult
@@ -35,7 +36,7 @@ class Model(nn.Module):
         self.fc = nn.Sequential(
             nn.Linear(self.hidden_dim * self.dir_mult, self.hidden_dim),
             nn.Tanh(),
-            nn.Linear(self.hidden_dim, self.pred_len)
+            nn.Linear(self.hidden_dim, self.pred_len * self.num_targets)
         )
 
     def forward(self, x):
@@ -61,10 +62,16 @@ class Model(nn.Module):
             attn_weights = F.softmax(torch.cat(attn_weights, dim=1), dim=1)
             context = torch.sum(lstm_out * attn_weights, dim=1)
 
-
+        print(context.shape)
         
         output = self.fc(context)
+
         y_pred = output[:, -1, :]
+        if self.num_targets > 1:
+            y_pred = y_pred.reshape(-1, self.pred_len, self.num_targets)
+        else:
+            y_pred = y_pred.reshape(-1, self.pred_len)
+            
         return y_pred
     
     def predict(self, x):
