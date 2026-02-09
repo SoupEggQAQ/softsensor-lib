@@ -1,4 +1,4 @@
-from . import VALSTM, MGRU, AttentionLSTM, LSTM
+from . import VALSTM, MGRU, AttentionLSTM, LSTM, CNN1D
 
-__all__ = ['VALSTM', 'MGRU', 'AttentionLSTM', 'LSTM']
+__all__ = ['VALSTM', 'MGRU', 'AttentionLSTM', 'LSTM', 'CNN1D']
 
