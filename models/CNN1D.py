@@ -13,7 +13,7 @@ class Model(nn.Module):
         self.num_targets = getattr(configs, 'num_targets', 1)
 
         self.conv1 = nn.Conv1d(
-            in_channels=self.seq_len,
+            in_channels=self.input_dim,
             out_channels=self.hidden_dim,
             kernel_size=3,
             padding=1

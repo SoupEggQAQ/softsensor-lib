@@ -248,9 +248,6 @@ class Exp_Softsensor_Realtime_Value(Exp_Basic):
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
-        # DTW 暂无
-
-        # 计算评估指标 mape, mspe = metric(preds, trues) 暂无
         preds_flat = preds.flatten()
         trues_flat = trues.flatten()
 

@@ -25,7 +25,7 @@ if __name__ == '__main__':
     parser.add_argument('--is_training', type=int, required=False, default=1, help='status')
     parser.add_argument('--model_id', type=str, required=False, default='test', help='model id')
     parser.add_argument('--model', type=str, required=False, default='MGRU', 
-                        help='model name, options: [VALSTM, AttentionLSTM, MGRU]')
+                        help='model name, options: [VALSTM, AttentionLSTM, MGRU, CNN1D, TCN]')
     
     # data loader
     parser.add_argument('--data', type=str, required=False, default='SRU', help='dataset type')
@@ -61,6 +61,12 @@ if __name__ == '__main__':
     parser.add_argument('--attention_type', type=str, default='scaled_dot', help='[scaled_dot, additive]')
     parser.add_argument('--bidirectional', type=int, default=0, help='Unidirectional 0, Bidirectional 1')
     parser.add_argument('--dir_mult', type=int, default=1, help='Unidirectional 1, Bidirectional 2')
+
+    ## CNN1D
+    
+
+    ## TCN
+    
     
     
     # optimization
