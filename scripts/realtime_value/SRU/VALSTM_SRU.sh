@@ -18,6 +18,9 @@ python -u ./softsensor-lib/run.py \
     --features M \
     --input_dim 6\
     --target y \
+    --target_columns -1 \
+    --feature_columns 0 1 2 3 4 5 \
+    --num_targets 1 \
     --seq_len $seq_len \
     --pred_len $pred_len \
     --hidden_dim $hidden_dim \

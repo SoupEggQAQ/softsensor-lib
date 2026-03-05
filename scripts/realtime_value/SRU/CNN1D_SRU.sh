@@ -1,10 +1,10 @@
 export CUDA_VIBLE_DEVICES=0
 
-model_name=AttentionLSTM
+model_name=CNN1D
 
 seq_len=20
 pred_len=1
-hidden_dim=60
+hidden_dim=30
 
 python -u ./run.py \
     --task_name realtime_prediction \
@@ -15,8 +15,9 @@ python -u ./run.py \
     --model $model_name \
     --data SRU \
     --features M \
+    --num_targets 1 \
     --input_dim 6 \
-    --target y \
+    --target 7.0 \
     --target_columns -1 \
     --feature_columns 0 1 2 3 4 5 \
     --num_targets 1 \

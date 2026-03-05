@@ -7,10 +7,10 @@ pred_len=1
 hidden_dim=60
 
 
-python -u ./softsensor-lib/run.py \
+python -u ./run.py \
     --task_name realtime_prediction \
     --is_training 1 \
-    --root_path ./softsensor-lib/dataset/ \
+    --root_path ./dataset/ \
     --data_path SRU_data.txt \
     --model_id SRU_$seq_len'_'$pred_len \
     --model $model_name \
@@ -18,6 +18,9 @@ python -u ./softsensor-lib/run.py \
     --features M \
     --input_dim 6\
     --target y \
+    --target_columns -1 \
+    --feature_columns 0 1 2 3 4 5 \
+    --num_targets 1 \
     --seq_len $seq_len \
     --pred_len $pred_len \
     --hidden_dim $hidden_dim \

@@ -20,7 +20,9 @@ warnings.filterwarnings('ignore')
 class Exp_Softsensor_Realtime_Value(Exp_Basic):
     def __init__(self, args):
         super(Exp_Softsensor_Realtime_Value, self).__init__(args)
-    
+        self.num_targets = getattr(args, 'num_targets', 1)
+        self.target_weights = getattr(args, 'target_weights', [1.0] * self.num_targets)
+
     def _build_model(self):
         model = self.model_dict[self.args.model].Model(self.args).float()
         if self.args.use_multi_gpu and self.args.use_gpu:
