@@ -71,6 +71,8 @@ softsensor-lib是一个面向深度学习研究者的开源库，特别适用于
 
 jitangjin@mail.sdu.edu.cn
 
+lapluie124@mail.sdu.edu.cn
+
 ## 致谢
 
 本库参考了以下仓库：
