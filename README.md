@@ -63,34 +63,26 @@ Run the scripts in:
 
 Place the model file in:
 
-./models
+```./models```
 
 You may refer to:
 
-./models/GRU
+```./models/GRU```
 
 Import the model in:
 
-./models/__init__.py
+```./models/__init__.py```
 
 Register the model in:
 
-Exp_Basic.model_dict
+```Exp_Basic.model_dict``` located in:```./exp/exp_basic.py```
 
-located in:
-
-./exp/exp_basic.py
-
-Create a corresponding running script in:
-
-./scripts
+Create a corresponding running script in:```./scripts```
 ## Citation
 
 If you find this repository helpful, please consider giving it a ⭐ star. Your support is greatly appreciated.
 
-If you would like to cite this repository in your paper, please refer to:
-
-https://www.wikihow.com/Cite-a-GitHub-Repository
+If you would like to cite this repository in your paper, please refer to:[link](https://www.wikihow.com/Cite-a-GitHub-Repository)
 
 ##Contact
 
@@ -104,11 +96,14 @@ lapluie124@mail.sdu.edu.cn
 
 This library was inspired by the following repository:
 
-TSlib
-https://github.com/thuml/Time-Series-Library
+[TSlib](https://github.com/thuml/Time-Series-Library)
 
 All datasets used in the experiments are publicly available datasets.
 
-Reference:
+[Link](https://link.springer.com/book/10.1007/978-1-84628-480-9)
 
-https://link.springer.com/book/10.1007/978-1-84628-480-9
+
+
+
+
+
