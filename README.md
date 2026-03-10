@@ -24,7 +24,7 @@ This project is particularly suitable for:
 
 Researchers working in soft sensing and process industry modeling
 
-Version Updates
+## Version Updates
 
 Current version: v1
 
@@ -41,12 +41,12 @@ softsensor-lib v1
 🐎 [Latest Update] (2026.01) Collected and organized several open-source soft sensing datasets
 
 ## Quick Start
-1. Prepare Data
+### 1. Prepare Data
 
 Place the soft sensing datasets in the following directory:
 
 ./dataset
-2. Installation
+### 2. Installation
 
 Clone this repository
 
@@ -54,12 +54,12 @@ Create a new Conda environment
 
 Install the required dependencies
 
-3. Training and Evaluation
+### 3. Training and Evaluation
 
 Run the scripts in:
 
 ./scripts
-4. Developing Custom Models
+### 4. Developing Custom Models
 
 Place the model file in:
 
