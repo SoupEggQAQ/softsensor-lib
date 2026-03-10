@@ -50,7 +50,7 @@ class Model(nn.Module):
         if self.num_targets > 1:
             y_pred = y_pred.reshape(batch_size, self.pred_len, self.num_targets)
         else:
-            y_pred = y_pred.reshape(batch_size, self.pred_len)
+            y_pred = y_pred.reshape(batch_size, self.pred_len, 1)
             
         return y_pred
     

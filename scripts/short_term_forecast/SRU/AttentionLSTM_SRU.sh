@@ -2,9 +2,9 @@ export CUDA_VIBLE_DEVICES=0
 
 model_name=AttentionLSTM
 
-task_name=realtime_prediction
+task_name=short_term_forecast
 seq_len=20
-pred_len=1
+pred_len=2
 hidden_dim=60
 
 python -u ./run.py \

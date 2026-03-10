@@ -5,7 +5,8 @@ import torch.nn.functional as F
 
 class Model(nn.Module):
     def __init__(self, configs):
-        
+        super(Model, self).__init__()
+
         self.hidden_dim = configs.hidden_dim
         self.seq_len = configs.seq_len
         self.input_dim = configs.input_dim
@@ -27,14 +28,14 @@ class Model(nn.Module):
     
     def forward(self, x):
         batch_size, seq_len, input_dim = x.size()
-        x_out = self.lstm(x)
-        x_out_last = x_out[:, -1, :]
+        lstm_out, (h_n, c_n) = self.lstm(x)
+        x_out_last = lstm_out[:, -1, :]
         y_pred = self.fc(x_out_last)
 
         if self.num_targets > 1:
-            y_pred = x_out_last.reshape(-1, self.pred_len, self.num_targets)
+            y_pred = y_pred.reshape(batch_size, self.pred_len, self.num_targets)
         else:
-            y_pred = x_out_last.reshape(-1, self.pred_len)
+            y_pred = y_pred.reshape(batch_size, self.pred_len, -1)
 
         return y_pred
     

@@ -41,7 +41,7 @@ class Model(nn.Module):
 
     def forward(self, x):
 
-        _, seq_len, _ = x.size()
+        batch_size, seq_len, _ = x.size()
         
         lstm_out, (h_n, c_n) = self.lstm(x)
 
@@ -62,15 +62,13 @@ class Model(nn.Module):
             attn_weights = F.softmax(torch.cat(attn_weights, dim=1), dim=1)
             context = torch.sum(lstm_out * attn_weights, dim=1)
 
-        print(context.shape)
-        
         output = self.fc(context)
 
         y_pred = output[:, -1, :]
         if self.num_targets > 1:
-            y_pred = y_pred.reshape(-1, self.pred_len, self.num_targets)
+            y_pred = y_pred.reshape(batch_size, self.pred_len, self.num_targets)
         else:
-            y_pred = y_pred.reshape(-1, self.pred_len)
+            y_pred = y_pred.reshape(batch_size, self.pred_len, 1)
             
         return y_pred
     

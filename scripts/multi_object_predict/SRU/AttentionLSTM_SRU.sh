@@ -2,7 +2,7 @@ export CUDA_VIBLE_DEVICES=0
 
 model_name=AttentionLSTM
 
-task_name=realtime_prediction
+task_name=multi_objective_prediction
 seq_len=20
 pred_len=1
 hidden_dim=60
@@ -16,11 +16,11 @@ python -u ./run.py \
     --model $model_name \
     --data SRU \
     --features M \
-    --input_dim 6 \
+    --input_dim 5 \
     --target y \
-    --target_columns -1 \
-    --feature_columns 0 1 2 3 4 5 \
-    --num_targets 1 \
+    --target_columns -1 -2 \
+    --feature_columns 0 1 2 3 4  \
+    --num_targets 2 \
     --seq_len $seq_len \
     --pred_len $pred_len \
     --hidden_dim $hidden_dim \

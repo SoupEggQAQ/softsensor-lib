@@ -36,12 +36,13 @@ class Model(nn.Module):
 
         x = x_grus[:, -1, :]
 
+        batch_size = x.shape[0]
         y_pred = self.prediction_layer(x)
 
         if self.num_targets > 1:
-            y_pred = y_pred.reshape(-1, self.pred_len, self.num_targets)
+            y_pred = y_pred.reshape(batch_size, self.pred_len, self.num_targets)
         else:
-            y_pred = y_pred.reshape(-1, self.pred_len)
+            y_pred = y_pred.reshape(batch_size, self.pred_len, 1)
         return y_pred
     
     def predict(self, x):

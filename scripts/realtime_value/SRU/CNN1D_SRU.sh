@@ -2,12 +2,13 @@ export CUDA_VIBLE_DEVICES=0
 
 model_name=CNN1D
 
+task_name=realtime_prediction
 seq_len=20
 pred_len=1
 hidden_dim=30
 
 python -u ./run.py \
-    --task_name realtime_prediction \
+    --task_name $task_name \
     --is_training 1 \
     --root_path ./dataset/ \
     --data_path SRU_data.txt \

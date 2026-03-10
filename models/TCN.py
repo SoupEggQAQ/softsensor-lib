@@ -13,12 +13,17 @@ class Model(nn.Module):
         self.num_targets = getattr(configs, 'num_targets', 1)
         self.num_layers = getattr(configs, 'num_layers', 3)
         self.kernel_size = getattr(configs, 'kernel_size', 3)
-        self.dropout = getattr(configs, 'dropout', '0.1')
+        # configs.dropout 可能来自命令行解析为 str；Dropout 需要 float
+        self.dropout = float(getattr(configs, 'dropout', 0.1))
 
+        # 为了让后续 fc 的输入维度固定为 hidden_dim * seq_len，
+        # 这里的 input_conv 必须保持时间长度不变（使用 padding + 裁剪实现因果卷积）
+        self.input_padding = self.kernel_size - 1
         self.input_conv = nn.Conv1d(
             self.input_dim, 
             self.hidden_dim,
-            self.kernel_size
+            self.kernel_size,
+            padding=self.input_padding
         )
 
         self.tcn_layers = nn.ModuleList()
@@ -59,6 +64,7 @@ class Model(nn.Module):
         
         # 输入卷积
         x = self.input_conv(x)
+        x = x[:, :, :-self.input_padding] if self.input_padding > 0 else x
         
         # TCN层
         for tcn_layer in self.tcn_layers:
@@ -77,7 +83,7 @@ class Model(nn.Module):
         if self.num_targets > 1:
             y_pred = y_pred.reshape(batch_size, self.pred_len, self.num_targets)
         else:
-            y_pred = y_pred.reshape(batch_size, self.pred_len)
+            y_pred = y_pred.reshape(batch_size, self.pred_len, 1)
             
         return y_pred
     
@@ -105,8 +111,8 @@ class TemporalBlock(nn.Module):
             out_channels,
             out_channels,
             kernel_size,
-            padding,
-            dilation
+            padding=padding,
+            dilation=dilation
         )
 
         self.bn2 = nn.BatchNorm1d(out_channels)
@@ -115,7 +121,7 @@ class TemporalBlock(nn.Module):
         self.downsample = nn.Conv1d(in_channels, out_channels, 1) if in_channels != out_channels else None
         
          # dropout
-        self.dropout = nn.Dropout(dropout)
+        self.dropout = nn.Dropout(float(dropout))
         
         self.padding = padding
 

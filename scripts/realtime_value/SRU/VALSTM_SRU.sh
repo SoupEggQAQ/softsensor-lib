@@ -2,15 +2,16 @@ export CUDA_VIBLE_DEVICES=0
 
 model_name=VALSTM
 
+task_name=realtime_prediction
 seq_len=20
 pred_len=1
 hidden_dim=60
 
 
-python -u ./softsensor-lib/run.py \
-    --task_name realtime_prediction \
+python -u ./run.py \
+    --task_name $task_name \
     --is_training 1 \
-    --root_path ./softsensor-lib/dataset/ \
+    --root_path ./dataset/ \
     --data_path SRU_data.txt \
     --model_id SRU_$seq_len'_'$pred_len \
     --model $model_name \

@@ -72,9 +72,9 @@ class Model(nn.Module):
         y_pred = self.fc(final_feature)  # [batch_size, pred_len]
         
         if self.num_targets > 1:
-            y_pred = y_pred.reshape(-1, self.pred_len, self.num_targets)
+            y_pred = y_pred.reshape(batch_size, self.pred_len, self.num_targets)
         else:
-            y_pred = y_pred.reshape(-1, self.pred_len)
+            y_pred = y_pred.reshape(batch_size, self.pred_len, 1)
 
         # 返回预测结果、隐藏序列、最终状态和最后一个时间步的注意力权重
         return y_pred

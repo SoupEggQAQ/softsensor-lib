@@ -1,10 +1,10 @@
 export CUDA_VIBLE_DEVICES=0
 
-model_name=AttentionLSTM
+model_name=TCN
 
-task_name=realtime_prediction
+task_name=short_term_forecast
 seq_len=20
-pred_len=1
+pred_len=2
 hidden_dim=60
 
 python -u ./run.py \
@@ -17,16 +17,13 @@ python -u ./run.py \
     --data SRU \
     --features M \
     --input_dim 6 \
-    --target y \
+    --target 7.0 \
     --target_columns -1 \
     --feature_columns 0 1 2 3 4 5 \
     --num_targets 1 \
     --seq_len $seq_len \
     --pred_len $pred_len \
     --hidden_dim $hidden_dim \
-    --bidirectional 0 \
-    --dir_mult 1 \
-    --attention_type scaled_dot \
     --learning_rate 0.0004 \
     --itr 1 \
     --train_epoch 100 \
