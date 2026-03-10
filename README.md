@@ -43,9 +43,8 @@ softsensor-lib v1
 ## Quick Start
 ### 1. Prepare Data
 
-Place the soft sensing datasets in the following directory:
+Place the soft sensing datasets in the following directory:```./dataset```
 
-./dataset
 ### 2. Installation
 
 Clone this repository
@@ -56,9 +55,8 @@ Install the required dependencies
 
 ### 3. Training and Evaluation
 
-Run the scripts in:
+Run the scripts in:```./scripts```
 
-./scripts
 ### 4. Developing Custom Models
 
 Place the model file in:
@@ -75,9 +73,14 @@ Import the model in:
 
 Register the model in:
 
-```Exp_Basic.model_dict``` located in:```./exp/exp_basic.py```
+```Exp_Basic.model_dict``` 
+
+located in:
+
+```./exp/exp_basic.py```
 
 Create a corresponding running script in:```./scripts```
+
 ## Citation
 
 If you find this repository helpful, please consider giving it a ⭐ star. Your support is greatly appreciated.
