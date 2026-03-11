@@ -6,7 +6,7 @@ from models import CNN1D, TCN, VALSTM, MGRU, AttentionLSTM, LSTM
 class Exp_Basic(object):
     def __init__(self, args):
         self.args = args
-        # 补充
+        # add your_model
         self.model_dict = {
             'VALSTM': VALSTM,
             'MGRU': MGRU,

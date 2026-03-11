@@ -13,11 +13,10 @@ class Model(nn.Module):
         self.num_targets = getattr(configs, 'num_targets', 1)
         self.num_layers = getattr(configs, 'num_layers', 3)
         self.kernel_size = getattr(configs, 'kernel_size', 3)
-        # configs.dropout 可能来自命令行解析为 str；Dropout 需要 float
+        
         self.dropout = float(getattr(configs, 'dropout', 0.1))
 
-        # 为了让后续 fc 的输入维度固定为 hidden_dim * seq_len，
-        # 这里的 input_conv 必须保持时间长度不变（使用 padding + 裁剪实现因果卷积）
+        
         self.input_padding = self.kernel_size - 1
         self.input_conv = nn.Conv1d(
             self.input_dim, 
@@ -38,7 +37,7 @@ class Model(nn.Module):
                     dropout=self.dropout
                 )
             )
-            dilation *= 2  # 指数级增加空洞率，扩大感受野
+            dilation *= 2
         
         # 输出层
         self.output_conv = nn.Conv1d(
@@ -117,7 +116,7 @@ class TemporalBlock(nn.Module):
 
         self.bn2 = nn.BatchNorm1d(out_channels)
 
-        # 下采样层（如果输入输出通道数不同）
+        # 下采样层
         self.downsample = nn.Conv1d(in_channels, out_channels, 1) if in_channels != out_channels else None
         
          # dropout

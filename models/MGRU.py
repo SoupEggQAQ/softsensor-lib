@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch
 import math
 
-# 多层GRU
+
 
 class Model(nn.Module):
     def __init__(self, configs):

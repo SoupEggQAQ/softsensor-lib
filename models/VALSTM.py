@@ -12,7 +12,7 @@ class Model(nn.Module):
         self.seq_len = configs.seq_len
         self.num_targets = getattr(configs, 'num_targets', 1)
 
-        # 使用PyTorch的LSTMCell替代手动实现的LSTM
+        # LSTMCell
         self.lstm_cell = nn.LSTMCell(self.input_dim, self.hidden_dim)
 
         # 注意力机制参数
@@ -29,11 +29,11 @@ class Model(nn.Module):
     
     def init_weights(self):
         stdv = 1.0 / math.sqrt(self.hidden_dim)
-        # 初始化注意力参数
+        
         for weight in [self.Wa, self.Ua, self.Va]:
             weight.data.uniform_(-stdv, stdv)
         self.ba.data.zero_()
-        # LSTMCell的权重会使用默认初始化，如果需要可以手动设置
+        
     
     def forward(self, x, init_states=None):
         # b: batch_size 
@@ -51,24 +51,24 @@ class Model(nn.Module):
         
         hidden_seq = []
         for t in range(seq_len):
-            # 取出当前时间步的输入
+            
             x_t = x[:, t, :]
-            # 计算注意力权重
+            
             a_t = torch.tanh(x_t @ self.Wa + torch.cat((h_t, c_t), dim=1) @ self.Ua + self.ba) @ self.Va
-            # softmax归一化得到注意力权重
+            
             alpha_t = self.Softmax(a_t)
-            # 对输入进行加权
+            
             x_t_attended = alpha_t * x_t
-            # 使用LSTMCell处理加权后的输入（替代手动实现的LSTM计算）
+            
             h_t, c_t = self.lstm_cell(x_t_attended, (h_t, c_t))
-            # 保存当前时间步的隐藏状态
+            
             hidden_seq.append(h_t.unsqueeze(1))
         
-        # 拼接所有时间步的隐藏状态: [batch_size, seq_len, hidden_dim]
+        
         hidden_seq = torch.cat(hidden_seq, dim=1)
-        # 使用最后一个时间步的隐藏状态进行预测
+        
         final_feature = hidden_seq[:, -1, :]  # [batch_size, hidden_dim]
-        # 全连接层做预测
+        
         y_pred = self.fc(final_feature)  # [batch_size, pred_len]
         
         if self.num_targets > 1:
@@ -76,7 +76,7 @@ class Model(nn.Module):
         else:
             y_pred = y_pred.reshape(batch_size, self.pred_len, 1)
 
-        # 返回预测结果、隐藏序列、最终状态和最后一个时间步的注意力权重
+        
         return y_pred
     
     def predict(self, x):

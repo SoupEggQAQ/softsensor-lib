@@ -41,17 +41,16 @@ class Exp_Softsensor_Multi_Objective(Exp_Basic):
         return model_optim
     
     def _select_criterion(self):
-        """多目标损失函数：支持加权组合或独立损失"""
+        
         if self.loss_type == 'independent':
-            # 为每个目标创建独立的损失函数
+            
             return [nn.MSELoss() for _ in range(self.num_targets)]
         else:
-            # 加权组合损失
-            return nn.MSELoss(reduction='none')  # 使用 'none' 以便分别计算每个目标的损失
+            
+            return nn.MSELoss(reduction='none')  
     
     def _compute_multi_target_loss(self, outputs, batch_y, criterion):
         """
-        计算多目标损失
         Args:
             outputs: [batch, pred_len, num_targets] 或 [batch, num_targets]
             batch_y: [batch, pred_len, num_targets] 或 [batch, num_targets]
@@ -60,52 +59,52 @@ class Exp_Softsensor_Multi_Objective(Exp_Basic):
             total_loss: 总损失
             individual_losses: 每个目标的损失列表
         """
-        # 确保维度匹配
+        
         if outputs.dim() == 2 and batch_y.dim() == 2:
-            # [batch, num_targets] 或 [batch, pred_len]
+            
             if outputs.shape[-1] == self.num_targets:
-                # [batch, num_targets]
-                outputs = outputs.unsqueeze(1) if outputs.dim() == 2 else outputs  # [batch, 1, num_targets]
+                
+                outputs = outputs.unsqueeze(1) if outputs.dim() == 2 else outputs  
                 batch_y = batch_y.unsqueeze(1) if batch_y.dim() == 2 else batch_y
             else:
                 # [batch, pred_len] -> [batch, pred_len, 1]
                 outputs = outputs.unsqueeze(-1)
                 batch_y = batch_y.unsqueeze(-1)
         
-        # 确保是 [batch, pred_len, num_targets] 格式
+        
         if outputs.dim() == 2:
             outputs = outputs.unsqueeze(1)
         if batch_y.dim() == 2:
             batch_y = batch_y.unsqueeze(1)
         
-        # 如果 pred_len > 1，对时间维度取平均
+        
         if outputs.shape[1] > 1:
-            outputs = outputs.mean(dim=1)  # [batch, num_targets] - 对时间维度求平均
-            batch_y = batch_y.mean(dim=1)  # [batch, num_targets] - 对时间维度求平均
+            outputs = outputs.mean(dim=1)  
+            batch_y = batch_y.mean(dim=1)  
         else:
-            outputs = outputs.squeeze(1)  # [batch, num_targets]
-            batch_y = batch_y.squeeze(1)  # [batch, num_targets]
+            outputs = outputs.squeeze(1)  
+            batch_y = batch_y.squeeze(1)  
         
         if self.loss_type == 'independent':
-            # 独立损失：每个目标单独计算
+            
             individual_losses = []
             for i in range(self.num_targets):
                 loss = criterion[i](outputs[:, i], batch_y[:, i])
                 individual_losses.append(loss)
-            # 加权组合
+            
             total_loss = sum(w * loss for w, loss in zip(self.target_weights, individual_losses))
         else:
-            # 加权组合损失
+            
             # outputs: [batch, num_targets], batch_y: [batch, num_targets]
             loss_per_target = criterion(outputs, batch_y)  # [batch, num_targets]
-            # 对每个目标求平均，然后加权
+            
             individual_losses = [loss_per_target[:, i].mean() for i in range(self.num_targets)]
             total_loss = sum(w * loss for w, loss in zip(self.target_weights, individual_losses))
         
         return total_loss, individual_losses
 
     def vali(self, vali_data, vali_loader, criterion):
-        """验证函数：支持多目标评估"""
+        
         total_loss = []
         individual_losses_list = [[] for _ in range(self.num_targets)]
         
@@ -220,7 +219,7 @@ class Exp_Softsensor_Multi_Objective(Exp_Basic):
         return self.model
 
     def test(self, setting, test=0):
-        """测试函数：支持多目标评估和指标计算"""
+        
         test_data, test_loader = self._get_data(flag='test')
         if test:
             print('loading model')
@@ -244,7 +243,7 @@ class Exp_Softsensor_Multi_Objective(Exp_Basic):
                 else:
                     outputs = self.model(batch_x)
                 
-                # 处理输出维度
+                
                 if outputs.dim() == 2:
                     if outputs.shape[-1] == self.num_targets:
                         # [batch, num_targets]
@@ -259,11 +258,11 @@ class Exp_Softsensor_Multi_Objective(Exp_Basic):
                     else:
                         batch_y = batch_y.unsqueeze(-1)
                 
-                # 保留所有时间步用于评估（多步预测时评估所有时间步）
+                
                 outputs = outputs.detach().cpu().numpy()
                 batch_y = batch_y.detach().cpu().numpy()
                 
-                # 数据反标准化（如果需要）
+                # 反标准化
                 if hasattr(test_data, 'scale') and test_data.scale and hasattr(self.args, 'inverse') and self.args.inverse:
                     if hasattr(test_data, 'inverse_transform'):
                         shape = batch_y.shape
@@ -276,7 +275,7 @@ class Exp_Softsensor_Multi_Objective(Exp_Basic):
         preds = np.concatenate(preds, axis=0)
         trues = np.concatenate(trues, axis=0)
         
-        # 确保维度正确：[samples, pred_len, num_targets]
+        # [samples, pred_len, num_targets]
         if preds.ndim == 2:
             if preds.shape[-1] == self.num_targets:
                 preds = preds.reshape(-1, 1, self.num_targets)

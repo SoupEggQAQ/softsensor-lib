@@ -127,7 +127,7 @@ class Exp_Softsensor_Realtime_Value(Exp_Basic):
                 elif hasattr(self.args, 'pred_len') and self.args.pred_len > 1:
                     batch_y = batch_y[:, -self.args.pred_len:]
 
-                # 训练时不能使用detach()，需要保留梯度用于反向传播
+                # 
                 loss = criterion(outputs, batch_y)
                 train_loss.append(loss.item())
 
@@ -220,18 +220,18 @@ class Exp_Softsensor_Realtime_Value(Exp_Basic):
                 preds.append(pred)
                 trues.append(true)
                 
-                # 可视化 暂无
+                
                 
         preds = np.concatenate(preds, axis=0)
         trues = np.concatenate(trues, axis=0)
         print('test shape before reshape:', preds.shape, trues.shape)
         
-        # 确保维度正确，处理不同形状的数据
+        
         if preds.ndim == 1:
             preds = preds.reshape(-1, 1)
             trues = trues.reshape(-1, 1)
         elif preds.ndim == 2:
-            # 如果是2D，保持原样或添加维度
+            
             if preds.shape[-1] == 1:
                 if trues.ndim == 3 and trues.shape[-1] == 1:
                     trues = trues.reshape(trues.shape[0], trues.shape[1])
@@ -239,7 +239,7 @@ class Exp_Softsensor_Realtime_Value(Exp_Basic):
                 preds = preds.reshape(-1, 1, preds.shape[-1])
                 trues = trues.reshape(-1, 1, trues.shape[-1])
         elif preds.ndim >= 3:
-            # 如果是3D或更高，reshape为统一格式
+            
             preds = preds.reshape(-1, preds.shape[-2], preds.shape[-1])
             trues = trues.reshape(-1, trues.shape[-2], trues.shape[-1])
         

@@ -70,7 +70,6 @@ if __name__ == '__main__':
     parser.add_argument('--target', type=str, default='y', help='Target column')
     parser.add_argument('--scale', type=bool, default=True, help='Whether to scale data')
     
-    # 获取当前脚本所在目录，然后构建dataset路径
     current_dir = os.path.dirname(os.path.abspath(__file__))
     dataset_dir = os.path.join(os.path.dirname(current_dir), 'dataset')
     
@@ -91,7 +90,6 @@ if __name__ == '__main__':
     print(f"Batch size: {args.batch_size}")
     print("=" * 60)
     
-    # 测试训练集
     print("\n[1] Testing training set...")
     train_set, train_loader = data_provider(args, 'train')
     print(f"Training set size: {len(train_set)}")
@@ -102,7 +100,6 @@ if __name__ == '__main__':
         batch_x, batch_y = next(iter(train_loader))
         print(f"  First batch - X shape: {batch_x.shape}, Y shape: {batch_y.shape}")
     
-    # 测试验证集
     print("\n[2] Testing validation set...")
     val_set, val_loader = data_provider(args, 'val')
     for i, (batch_x, batch_y) in enumerate(val_loader):
@@ -112,7 +109,6 @@ if __name__ == '__main__':
         x, y = val_set[0]
         print(f"  First sample - X shape: {x.shape}, Y shape: {y.shape}")
     
-    # 测试测试集
     print("\n[3] Testing test set...")
     test_set, test_loader = data_provider(args, 'test')
     print(f"Test set size: {len(test_set)}")

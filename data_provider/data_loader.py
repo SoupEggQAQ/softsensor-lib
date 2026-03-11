@@ -117,8 +117,6 @@ class Dataset_Custom(Dataset):
         return seq_x, seq_y
     
     def __len__(self):
-        # 需要同时满足 seq_x 和 seq_y 的边界约束
-        # seq_x 需要: index + seq_len <= len(data_x)
-        # seq_y 需要: index + seq_len - 1 + pred_len <= len(data_y)
+        
         return max(0, len(self.data_x) - self.seq_len - self.pred_len + 2)
         
